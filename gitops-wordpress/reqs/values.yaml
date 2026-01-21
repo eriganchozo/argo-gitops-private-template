@@ -1,0 +1,17 @@
+mariadb:
+  fullnameOverride: wp-db
+  architecture: standalone
+  primary:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+    persistence:
+      enabled: true
+      STorageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi

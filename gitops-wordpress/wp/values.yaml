@@ -1,0 +1,20 @@
+wordpress:
+  mariadb:
+    enabled: false
+  service:
+    type: ClusterIP
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hostname: wp-example-prod.gitops.localhost
+    path: /
+  externalDatabase:
+    host: wp-db
+    port: 3306

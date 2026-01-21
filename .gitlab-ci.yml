@@ -1,0 +1,44 @@
+stages:
+  - build
+  - upload
+
+container-image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}/docker/custom-nginx"
+      --dockerfile "${CI_PROJECT_DIR}/docker/custom-nginx/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}/nginx:latest"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+chart:
+  image:
+    name: alpine/helm:3.11.2
+    entrypoint: [""]
+  stage: upload
+  variables:
+    CHART_NAME: mikroways-website
+  script:
+    - export REPOURL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable"
+    - helm plugin install https://github.com/chartmuseum/helm-push
+    - cd charts
+    - helm package ${CHART_NAME}
+    # Primero subimos el chart en un repositorio de charts
+    - helm repo add ${CHART_NAME} --username gitlab-ci-token
+      --password $CI_JOB_TOKEN $REPOURL
+    - helm cm-push ${CHART_NAME}*tgz ${CHART_NAME}
+    # Ahora subimos el chart a una registry OCI
+    - echo $CI_REGISTRY_PASSWORD | helm registry login $CI_REGISTRY
+      --username $CI_REGISTRY_USER --password-stdin
+    - helm push ${CHART_NAME}*tgz oci://$CI_REGISTRY_IMAGE/charts
+    - >
+      echo 
+      && echo "==============================================================================="
+      && echo "Chart repository: $REPOURL"
+      && echo "Chart OCI registry: oci://$CI_REGISTRY_IMAGE/charts"
+      && echo "==============================================================================="
+      && echo

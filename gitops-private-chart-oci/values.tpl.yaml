@@ -1,0 +1,18 @@
+mikroways-website:
+  service:
+    type: ClusterIP
+  image:
+    # Completar con la URL completa de la imagen
+    # repository: registry.gitlab.com/your-user/gitops-private-demo/nginx
+    repository: CHANGEME
+    tag: latest
+    pullSecrets:
+      - image-pull-secret
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: mikroways-website-oci.gitops.localhost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific

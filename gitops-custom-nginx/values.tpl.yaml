@@ -1,0 +1,23 @@
+nginx:
+  service:
+    type: ClusterIP
+  image:
+    # Cambiar al registry a lo que hayas usado: gitlab o ghcr.io:
+    # registry: ghcr.io
+    # registry: registry.gitlab.com
+    registry: CHANGEME
+
+    # Cambiar al repositorio dentro de la registry configurada. Por ejemplo:
+    # repository: chrodriguez/gitops-private-demo/nginx
+    repository: CHANGEME
+    tag: latest
+
+    # Este nombre debe coincidir con el utilizado en el repositorio de gitops
+    pullSecrets:
+      - image-pull-secret
+  containerPorts:
+      http: 80
+  ingress:
+    enabled: true
+    hostname: nginx-custom.private-registry.gitops.localhost
+    ingressClassName: nginx
