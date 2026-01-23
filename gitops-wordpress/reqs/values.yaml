@@ -1,4 +1,6 @@
 mariadb:
+  image:
+    tag: latest
   fullnameOverride: wp-db
   architecture: standalone
   primary:

@@ -1,4 +1,6 @@
 wordpress:
+  image:
+    tag: latest
   mariadb:
     enabled: false
   service:
